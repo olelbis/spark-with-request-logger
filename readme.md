@@ -1,9 +1,12 @@
 # Embedded Jetty Spark instance with request logger
 
 How to create a Spark instance with an embedded Jetty server containing a log4j request logger.
-This is a tutorial rewamp with the latest Spark libs and dependency, the original are still available at:
+This is a tutorial rewamp with the latest Spark libs & dependency, the original are still available at:
+
 [Sparkjava](http://sparkjava.com/tutorials/jetty-request-log)
+
 or:
+
 [Github](https://github.com/ygaller/spark-with-request-logger)
 
 ## Creating an embedded Jetty server with a request logger
