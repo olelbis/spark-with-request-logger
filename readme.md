@@ -39,7 +39,8 @@ First up, let's create the access logger. Given a log4j logger, we will want to 
 
 public class RequestLogFactory {
 
-    private Logger logger;
+    @SuppressWarnings("unused")
+	private Logger logger;
 
     public RequestLogFactory(Logger logger) {
         this.logger = logger;
@@ -47,15 +48,6 @@ public class RequestLogFactory {
 
     CustomRequestLog create() {
         return new CustomRequestLog(null) {
-            @SuppressWarnings("unused")
-			protected boolean isEnabled() {
-                return true;
-            }
-
-            @SuppressWarnings("unused")
-			public void write(String s) throws IOException {
-                logger.info(s);
-            }
         };
     }
 }
