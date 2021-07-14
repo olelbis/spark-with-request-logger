@@ -1,7 +1,7 @@
 package app.utils;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.server.AbstractNCSARequestLog;
+import org.eclipse.jetty.server.CustomRequestLog;
 
 import java.io.IOException;
 
@@ -13,15 +13,15 @@ public class RequestLogFactory {
         this.logger = logger;
     }
 
-    AbstractNCSARequestLog create() {
-        return new AbstractNCSARequestLog() {
-            @Override
-            protected boolean isEnabled() {
+    CustomRequestLog create() {
+        return new CustomRequestLog(null) {
+            @SuppressWarnings("unused")
+			protected boolean isEnabled() {
                 return true;
             }
 
-            @Override
-            public void write(String s) throws IOException {
+            @SuppressWarnings("unused")
+			public void write(String s) throws IOException {
                 logger.info(s);
             }
         };
