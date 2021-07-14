@@ -139,10 +139,10 @@ Now all that remains is to define the log4j logger and call the utility function
 
 ## The result
 
-After we spin up our Spark instance and go to [http://localhost:4567/hello], we will see the following output in logs:
+After we spin up our Spark instance and go to [http://localhost:4567/hello], we will see the following output in logfile http-2021_07_14.log:
 
 ~~~console
 
-20:0:0:0:0:0:0:1 - - [14/Jul/2021:08:05:37 +0000] "GET /hello HTTP/1.1" 200 5 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
+0:0:0:0:0:0:0:1 - - [14/Jul/2021:21:36:18 +0000] "GET /hello HTTP/1.1" 200 57 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 
 ~~~
