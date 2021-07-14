@@ -33,7 +33,7 @@ public class ApplicationMain {
 
 ### Creating the logger
 
-First up, let's create the access logger. Given a log4j logger, we will want to log messages in a standard format. For this purpose, we can implement an instance of `CustomRequestLog` that takes our logger as an argument
+First up, let's create the access logger. Given a log4j logger, we will want to log messages in a standard format. For this purpose, we can implement an instance of `CustomRequestLog` that takes our logger as an argument and write output to a file in the same directory of jar file.
 
 ~~~java
 
@@ -45,9 +45,15 @@ public class RequestLogFactory {
     public RequestLogFactory(Logger logger) {
         this.logger = logger;
     }
-
+    RequestLogWriter rlw = new RequestLogWriter();
+    
     CustomRequestLog create() {
-        return new CustomRequestLog(null) {
+    	rlw.setTimeZone("GMT");
+    	rlw.setFilename("http-yyyy_MM_dd.log");
+    	rlw.setFilenameDateFormat("yyyy_MM_dd");
+    	rlw.setAppend(false);
+    	//System.out.println(rlw.getFilenameDateFormat());
+        return new CustomRequestLog(rlw,CustomRequestLog.EXTENDED_NCSA_FORMAT) {
         };
     }
 }
