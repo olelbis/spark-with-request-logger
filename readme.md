@@ -1,10 +1,14 @@
 # Embedded Jetty Spark instance with request logger
 
-How to create a Spark instance with an embedded Jetty server containing a log4j request logger
+How to create a Spark instance with an embedded Jetty server containing a log4j request logger.
+This is a tutorial rewamp with the latest Spark libs and dependency, the original are still available at:
+[Sparkjava](http://sparkjava.com/tutorials/jetty-request-log)
+or:
+[Github](https://github.com/ygaller/spark-with-request-logger)
 
 ## Creating an embedded Jetty server with a request logger
 
-Spark 2.6.0 introduced the option of providing a configurable embedded Jetty server. 
+Starting from 2.6.0 Spark introduced the option of providing a configurable embedded Jetty server. 
 This tutorial shows how to use this capability in order to configure such a server
 that supports logging of incoming requests using log4j.
 
@@ -26,7 +30,7 @@ public class ApplicationMain {
 
 ### Creating the logger
 
-First up, let's create the access logger. Given a log4j logger, we will want to log messages in a standard format. For this purpose, we can implement an instance of `AbstractNCSARequestLog` that takes our logger as an argument
+First up, let's create the access logger. Given a log4j logger, we will want to log messages in a standard format. For this purpose, we can implement an instance of `CustomRequestLog` that takes our logger as an argument
 
 ~~~java
 
@@ -38,15 +42,15 @@ public class RequestLogFactory {
         this.logger = logger;
     }
 
-    AbstractNCSARequestLog create() {
-        return new AbstractNCSARequestLog() {
-            @Override
-            protected boolean isEnabled() {
+    CustomRequestLog create() {
+        return new CustomRequestLog(null) {
+            @SuppressWarnings("unused")
+			protected boolean isEnabled() {
                 return true;
             }
 
-            @Override
-            public void write(String s) throws IOException {
+            @SuppressWarnings("unused")
+			public void write(String s) throws IOException {
                 logger.info(s);
             }
         };
@@ -61,28 +65,33 @@ We can't just provide Spark with a server instance. Rather, we need to provide a
 
 ~~~java
 
-public class EmbeddedJettyFactoryConstructor {
-    AbstractNCSARequestLog requestLog;
+class EmbeddedJettyServerFactory implements JettyServerFactory {
+    private EmbeddedJettyFactoryConstructor embeddedJettyFactoryConstructor;
 
-    public EmbeddedJettyFactoryConstructor(AbstractNCSARequestLog requestLog) {
-        this.requestLog = requestLog;
+    EmbeddedJettyServerFactory(EmbeddedJettyFactoryConstructor embeddedJettyFactoryConstructor) {
+        this.embeddedJettyFactoryConstructor = embeddedJettyFactoryConstructor;
+
     }
 
-    EmbeddedJettyFactory create() {
-        return new EmbeddedJettyFactory((maxThreads, minThreads, threadTimeoutMillis) -> {
-            Server server;
-            if (maxThreads > 0) {
-                int max = maxThreads > 0 ? maxThreads : 200;
-                int min = minThreads > 0 ? minThreads : 8;
-                int idleTimeout = threadTimeoutMillis > 0 ? threadTimeoutMillis : '\uea60';
-                server = new Server(new QueuedThreadPool(max, min, idleTimeout));
-            } else {
-                server = new Server();
-            }
+    @Override
+    public Server create(int maxThreads, int minThreads, int threadTimeoutMillis) {
+        Server server;
+        if (maxThreads > 0) {
+            int max = maxThreads > 0 ? maxThreads : 200;
+            int min = minThreads > 0 ? minThreads : 8;
+            int idleTimeout = threadTimeoutMillis > 0 ? threadTimeoutMillis : '\uea60';
+            server = new Server(new QueuedThreadPool(max, min, idleTimeout));
+        } else {
+            server = new Server();
+        }
 
-            server.setRequestLog(requestLog);
-            return server;
-        });
+        server.setRequestLog(embeddedJettyFactoryConstructor.requestLog);
+        return server;
+    }
+
+    @Override
+    public Server create(ThreadPool threadPool) {
+        return new Server(threadPool);
     }
 }
 
@@ -102,8 +111,8 @@ public class SparkUtils {
         EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY, factory);
     }
 
-    private static EmbeddedJettyFactory createEmbeddedJettyFactoryWithRequestLog(org.apache.log4j.Logger logger) {
-        AbstractNCSARequestLog requestLog = new RequestLogFactory(logger).create();
+    private static EmbeddedJettyFactory createEmbeddedJettyFactoryWithRequestLog(Logger logger) {
+    	CustomRequestLog requestLog = new RequestLogFactory(logger).create();
         return new EmbeddedJettyFactoryConstructor(requestLog).create();
     }
 }
@@ -115,7 +124,7 @@ Now all that remains is to define the log4j logger and call the utility function
 ~~~java
 
     public static void main(String[] args) {
-        Logger logger = Logger.getLogger(ApplicationMain.class);
+        Logger logger = LogManager.getLogger(ApplicationMain.class);
         SparkUtils.createServerWithRequestLog(logger);
 
         get("/hello", (request, response) -> "world");
@@ -129,6 +138,6 @@ After we spin up our Spark instance and go to [http://localhost:4567/hello], we 
 
 ~~~console
 
-2017-07-24 21:29:52 INFO  ApplicationMain:25 - 0:0:0:0:0:0:0:1 - - [24/Jul/2017:18:29:52 +0000] "GET /hello HTTP/1.1" 200 5 
+20:0:0:0:0:0:0:1 - - [14/Jul/2021:08:05:37 +0000] "GET /hello HTTP/1.1" 200 5 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 
 ~~~
