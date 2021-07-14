@@ -120,16 +120,20 @@ public class SparkUtils {
 
 ~~~
 
-Now all that remains is to define the log4j logger and call the utility function in our main 
+Now all that remains is to define the log4j logger and call the utility function in our main. 
 
 ~~~java
 
     public static void main(String[] args) {
         Logger logger = LogManager.getLogger(ApplicationMain.class);
         SparkUtils.createServerWithRequestLog(logger);
-
-        get("/hello", (request, response) -> "world");
-    }
+        String[] answer = {"World", "Solar System", "Galaxy", "Universe"};
+        get("/hello", (request, response) ->{
+        	response.type("application/json");
+        	response.status(200);
+        	return answer;},JsonUtil.json() );
+   
+        }
 
 ~~~
 
