@@ -11,11 +11,11 @@ public class ApplicationMain {
     public static void main(String[] args) {
         Logger logger = LogManager.getLogger(ApplicationMain.class);
         SparkUtils.createServerWithRequestLog(logger);
-        String[] lang = {"World", "Solar System", "Galaxy", "Universe"};
+        String[] answer = {"World", "Solar System", "Galaxy", "Universe"};
         get("/hello", (request, response) ->{
         	response.type("application/json");
         	response.status(200);
-        	return lang;},JsonUtil.json() );
+        	return answer;},JsonUtil.json() );
    
         
     }
