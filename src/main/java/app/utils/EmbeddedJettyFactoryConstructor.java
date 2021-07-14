@@ -1,12 +1,12 @@
 package app.utils;
 
-import org.eclipse.jetty.server.AbstractNCSARequestLog;
+import org.eclipse.jetty.server.CustomRequestLog;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 
 public class EmbeddedJettyFactoryConstructor {
-    AbstractNCSARequestLog requestLog;
+	CustomRequestLog requestLog;
 
-    public EmbeddedJettyFactoryConstructor(AbstractNCSARequestLog requestLog) {
+    public EmbeddedJettyFactoryConstructor(CustomRequestLog requestLog) {
         this.requestLog = requestLog;
     }
 

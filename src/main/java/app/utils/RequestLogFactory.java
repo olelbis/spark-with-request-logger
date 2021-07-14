@@ -1,6 +1,6 @@
 package app.utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.CustomRequestLog;
 
 import java.io.IOException;

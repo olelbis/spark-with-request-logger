@@ -10,6 +10,8 @@ class EmbeddedJettyServerFactory implements JettyServerFactory {
 
     EmbeddedJettyServerFactory(EmbeddedJettyFactoryConstructor embeddedJettyFactoryConstructor) {
         this.embeddedJettyFactoryConstructor = embeddedJettyFactoryConstructor;
+        @SuppressWarnings("unused")
+		int a = 1;
     }
 
     @Override
